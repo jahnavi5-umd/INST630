@@ -9,7 +9,7 @@
    =========================================== */
 
 /* External font - add your choice from Google Fonts, Inter will not be graded */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
 
 :root {
   /* Spacing scale */
@@ -18,7 +18,7 @@
   --spacing-md: 1rem;
   --spacing-lg: 1.5rem;
   --spacing-xl: 2rem;
-  
+
   /* Colors - customize these */
   --color-bg: hsl(210, 20%, 98%);
   --color-surface: hsl(0, 0%, 100%);
@@ -26,14 +26,16 @@
   --color-text-muted: hsl(210, 10%, 50%);
   --color-accent: hsl(220, 80%, 50%);
   --color-border: hsla(210, 10%, 20%, 0.1);
-  
+
   /* Typography */
-  --font-body: 'Inter', system-ui, sans-serif;
-  --font-display: 'Inter', system-ui, sans-serif; /* Change this */
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-display: "Inter", system-ui, sans-serif; /* Change this */
 }
 
 /* Reset */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
 }
@@ -58,42 +60,48 @@ body {
 
 .page-layout {
   display: grid;
-  /* YOUR CODE: grid-template-areas */
-  /* YOUR CODE: grid-template-columns */
-  /* YOUR CODE: grid-template-rows */
+  /* 3 columns: left gutter, center content (max ~1150px), right gutter */
+  grid-template-columns: minmax(1.5rem, 1fr) minmax(auto, 92rem) minmax(
+      1.5rem,
+      1fr
+    );
+  grid-template-rows: auto auto 1fr auto;
+  grid-template-areas:
+    "header header header"
+    ".      hero     ."
+    ".      list     ."
+    ".      footer   .";
   min-height: 100vh;
   gap: var(--spacing-md);
 }
 
 /* ===========================================
    TASK 2: ASSIGN GRID AREAS
-   
    Connect each section to its named area
    =========================================== */
 
 .site-header {
-  /* YOUR CODE: grid-area */
+  grid-area: header;
   background: var(--color-surface);
   padding: var(--spacing-md) var(--spacing-lg);
   border-bottom: 1px solid var(--color-border);
 }
 
 .hero-section {
-  /* YOUR CODE: grid-area */
-  padding: var(--spacing-xl);
+  grid-area: hero;
+  padding: var(--spacing-xl) 0;
 }
 
 .list-section {
-  /* YOUR CODE: grid-area */
-  padding: var(--spacing-lg);
+  grid-area: list;
+  padding: 0;
 }
 
 .site-footer {
-  /* YOUR CODE: grid-area */
+  grid-area: footer;
   background: var(--color-text);
   color: var(--color-bg);
   padding: var(--spacing-lg);
-  /* NOTE: Footer should not exceed main content width */
 }
 
 /* ===========================================
@@ -117,7 +125,10 @@ body {
 
 /* Make list items flow horizontally on large screens */
 .list-section {
-  /* YOUR CODE: display flex, gap, wrap behavior */
+  /* YOUR CODE: display flex, gap, wrap behavior - Complete */
+  display: flex;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
 }
 
 .list-item {
@@ -125,7 +136,13 @@ body {
   padding: var(--spacing-lg);
   border-radius: 0.5rem;
   border: 1px solid var(--color-border);
-  /* YOUR CODE: flex-basis or width for sizing */
+  /* YOUR CODE: flex-basis or width for sizing - Complete */
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  flex-basis: calc(33.333% - var(--spacing-lg));
+  height: fit-content;
 }
 
 /* ===========================================
@@ -140,14 +157,25 @@ body {
   .page-layout {
     /* YOUR CODE: redefine grid-template-areas */
     /* YOUR CODE: single column layout */
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto;
+    grid-template-areas:
+      "header"
+      "hero"
+      "list"
+      "footer";
+    padding: 0 var(--spacing-md);
   }
-  
+
   .list-section {
     /* YOUR CODE: change flex-direction if needed */
+    flex-direction: column;
+    gap: var(--spacing-md);
   }
-  
+
   .list-item {
     /* YOUR CODE: full width on mobile */
+    width: 100%;
   }
 }
 
@@ -170,4 +198,41 @@ a {
 
 a:hover {
   text-decoration: underline;
+}
+
+.card-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-thumb img {
+  width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-between;
+}
+.card-content h2 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: var(--spacing-xs);
+  line-height: 1.2;
+}
+
+.card-content div p {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-xs);
+}
+.card-desc {
+  font-size: 0.875rem;
+  color: var(--color-text);
+  line-height: 1.45;
 }
