@@ -1,84 +1,256 @@
-/* INTENTIONALLY UGLY STARTER STYLES */
-/* These styles are very, very ugly. */
-/* Time to make them attractive, legible, and usable */
+/* ==========================================================================
+   1. CODE QUALITY: CSS CUSTOM PROPERTIES (Variables for colors, spacing, typography)
+   ========================================================================== */
+:root {
+  /* Cohesive 4-Color Palette (WCAG AA Compliant) */
+  --color-bg-page: #fbf9f5;
+  --color-bg-card: #ffffff;
+  --color-bg-subtle: #f5ede4;
+  --color-text-main: #2b1810; /* Espresso: high contrast for titles/body */
+  --color-text-muted: #6e5545; /* Warm cocoa: readable secondary text */
+  --color-accent: #a4481b; /* Burnt amber: accents & numbering */
+  --color-border: #e6dad0;
+
+  /* Typography (Maximum 2 font families total) */
+  --font-serif: "Charis SIL", Georgia, serif;
+  --font-sans:
+    system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Consistent Spacing Scale */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+}
+
+/* ==========================================================================
+   2. GLOBAL RESET & BASE STYLES
+   ========================================================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 body {
-    font-family: Times, serif;
-    background-color: #ff00ff;
-    margin: 0;
-    padding: 0;
+  font-family: var(--font-sans);
+  background-color: var(--color-bg-page);
+  color: var(--color-text-main);
+  line-height: 1.6;
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
+/* ==========================================================================
+   3. PAGE LAYOUT WITH CSS GRID (Mobile-First under 48rem)
+   - Uses CSS Grid for overall page structure
+   - Uses grid-template-areas with named regions
+   - Fills available viewport space
+   ========================================================================== */
 .recipe-container {
-    background-color: yellow;
-    border: 10px solid red;
-    margin: 10px;
-    padding: 5px;
+  width: 100%;
+  max-width: 960px;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: var(--space-lg);
+
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "header"
+    "description"
+    "meta"
+    "ingredients"
+    "instructions"
+    "footer";
+  gap: var(--space-lg);
 }
 
+/* Named Grid Area Mapping */
 .recipe-header {
-    background-color: lime;
-    border: 3px dotted blue;
-    text-align: center;
+  grid-area: header;
+}
+.recipe-description {
+  grid-area: description;
+}
+.recipe-meta {
+  grid-area: meta;
+}
+.ingredients-section {
+  grid-area: ingredients;
+}
+.instructions-section {
+  grid-area: instructions;
+}
+.recipe-footer {
+  grid-area: footer;
+}
+
+/* Responsive Breakpoint: Desktop Reorganization (≥ 48rem) */
+@media (min-width: 48rem) {
+  body {
+    padding: var(--space-xl);
+  }
+
+  .recipe-container {
+    padding: var(--space-xl);
+    grid-template-columns: 5fr 7fr;
+    grid-template-areas:
+      "header       header"
+      "description  description"
+      "meta         meta"
+      "ingredients  instructions"
+      "footer       footer";
+    column-gap: var(--space-xl);
+  }
+}
+
+/* ==========================================================================
+   4. COMPONENT LAYOUT WITH FLEXBOX (Arrangement within grid regions)
+   ========================================================================== */
+
+/* --- Header: Flex arrangement between Title and Image --- */
+.recipe-header {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--space-md);
 }
 
 .recipe-title {
-    color: red;
-    font-size: 40px;
-    text-decoration: underline;
-}
-
-.recipe-meta {
-    background-color: orange;
-    border: 2px dashed purple;
-}
-
-.recipe-description {
-    background-color: aqua;
-    font-size: 8px;
-    color: purple;
-}
-
-.ingredients-section {
-    background-color: pink;
-    border: 5px solid brown;
-}
-
-.ingredients-list {
-    list-style: none;
-}
-
-.ingredients-list li {
-    background-color: white;
-    border: 1px solid black;
-    margin: 2px;
-    padding: 1px;
-}
-
-.instructions-section {
-    background-color: lightgray;
-    border: 3px solid navy;
-}
-
-.instruction-step {
-    background-color: beige;
-    border: 2px solid maroon;
-    margin: 3px;
-}
-
-.recipe-footer {
-    background-color: violet;
-    text-align: right;
-    font-size: 6px;
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--color-text-main);
 }
 
 .recipe-image {
-    width: 50px;
-    height: 50px;
-    border: 5px solid black;
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  border-radius: 8px;
 }
 
-* {
-    margin: 2px;
-    padding: 1px;
+@media (min-width: 48rem) {
+  .recipe-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .recipe-title {
+    flex: 1;
+  }
+
+  .recipe-image {
+    flex: 1;
+    height: 300px;
+  }
+}
+
+/* --- Description --- */
+.recipe-description p {
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  max-width: 70ch;
+}
+
+/* --- Metadata Ribbon: Flexbox row with prominent cooking information --- */
+.recipe-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  background-color: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: var(--space-md);
+}
+
+.meta-item {
+  flex: 1 1 120px;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.95rem;
+  color: var(--color-text-main);
+}
+
+.meta-item strong {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-accent);
+}
+
+/* --- Section Headings: Visual Hierarchy --- */
+.ingredients-section h2,
+.instructions-section h2 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-xs);
+  border-bottom: 2px solid var(--color-bg-subtle);
+}
+
+/* --- Ingredients List: Flexbox column for clear checklist flow --- */
+.ingredients-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.ingredients-list li {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--color-bg-subtle);
+  font-size: 0.95rem;
+  color: var(--color-text-main);
+}
+
+.ingredients-list li::before {
+  content: "•";
+  color: var(--color-accent);
+  font-weight: bold;
+}
+
+/* --- Instructions List: Flexbox step-by-step clarity --- */
+.instructions-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding-left: var(--space-lg);
+}
+
+.instruction-step {
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.instruction-step strong {
+  color: var(--color-text-main);
+}
+
+.instructions-list li::marker {
+  color: var(--color-accent);
+  font-weight: bold;
+}
+
+/* --- Recipe Footer: Flexbox alignment --- */
+.recipe-footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-md);
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
 }
