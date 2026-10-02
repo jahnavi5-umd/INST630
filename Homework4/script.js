@@ -34,6 +34,7 @@ const btnYes = document.querySelector("#btn-yes");
 const btnNo = document.querySelector("#btn-no");
 const confirmation = document.querySelector("#confirmation");
 const regret = document.querySelector("#regret");
+const attendeeTotal = document.querySelector("#attendee-total");
 
 // ── 3. HELPERS: small functions that do one thing ───────────
 //
@@ -108,6 +109,7 @@ btnNo.addEventListener("click", () => {
 
 const updateConfirmation = () => {
   const guests = getGuests();
+  attendeeTotal.textContent = `${guests + 1} people confirmed so far`;
 
   // YOUR CODE HERE: build guestLine based on guests value
   let guestLine = "";
