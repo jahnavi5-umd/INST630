@@ -137,6 +137,8 @@ nameInput.addEventListener("input", () => {
   // YOUR CODE HERE
   if (isGoing) {
     updateConfirmation();
+  } else if (isNotGoing) {
+    regret.textContent = `${getName()} can't make it.`;
   }
 });
 
