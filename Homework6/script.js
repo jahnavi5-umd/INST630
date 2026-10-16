@@ -8,154 +8,197 @@
 let restaurants = [];
 
 // Wait for the page to load
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     console.log('Tutorial 6: Async data loading ready!');
-    
+
     // Get UI elements
     const loadButton = document.querySelector('#load-data-button');
     const statusDisplay = document.querySelector('#loading-status');
     const statusMessage = statusDisplay.querySelector('.status-message');
-    
+
     // Get the method buttons (start disabled)
     const displayButton = document.querySelector('#display-button');
     const filterButton = document.querySelector('#filter-button');
     const mapButton = document.querySelector('#map-button');
     const errorButton = document.querySelector('#error-button');
-    
+
     // ============================================
     // MAIN DATA LOADING FUNCTION
     // ============================================
-    
+
     // This is the key new skill - loading data asynchronously
-    loadButton.addEventListener('click', async function() {
-        
+    loadButton.addEventListener('click', async function () {
+
         // Step 1: Show loading state
         // Hint: Change statusDisplay classes and statusMessage text
         // Hint: Disable the load button while loading
-        
+
         // YOUR CODE HERE:
-        
-        
+        updateStatus('loading', 'Loading restaurant data...');
+        loadButton.disabled = true;
+
         try {
             // Step 2: Use fetch() to load data
             // Hint: const response = await fetch('restaurants.json');
             // Hint: Check if response.ok before continuing
-            
+
             // Step 3: Convert response to JSON
             // Hint: const data = await response.json();
-            
+
             // Step 4: Store data in global variable
             // Hint: restaurants = data;
-            
+
             // YOUR CODE HERE:
-            
-            
+            const response = await fetch('restaurants.json');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            restaurants = data;
+
             // Step 5: Show success state and enable buttons
             // Hint: Update statusDisplay classes and message
             // Hint: Enable all the method buttons
-            
+
             // YOUR CODE HERE:
-            
-            
+            updateStatus('success', `Successfully loaded ${restaurants.length} restaurants`);
+            toggleMethodButtons(true);
+            loadButton.disabled = false;
+
         } catch (error) {
             // Step 6: Handle errors gracefully
             // Hint: Show error state with user-friendly message
             // Hint: Log the actual error for debugging
-            
+
             // YOUR CODE HERE:
-            
-            
+            updateStatus('error', 'Failed to load restaurant data. Please try again.');
+            toggleMethodButtons(false);
+            loadButton.disabled = false;
+            console.error('Error loading restaurant data:', error);
         }
     });
-    
+
     // ============================================
     // ARRAY METHOD FUNCTIONS - Same as Tutorial 5
     // ============================================
-    
+
     // Display all restaurants (same as Tutorial 5, but using loaded data)
-    displayButton.addEventListener('click', function() {
+    displayButton.addEventListener('click', function () {
         const restaurantList = document.querySelector('#restaurant-list');
-        
+
         // Check if we have data first
         if (restaurants.length === 0) {
             restaurantList.innerHTML = '<p class="placeholder">No data loaded yet</p>';
             return;
         }
-        
+
         // Step 7: Use the same forEach logic from Tutorial 5
         // Hint: restaurants.forEach(function(restaurant) { })
-        
+
         // YOUR CODE HERE:
-        
-        
+        restaurantList.innerHTML = '';
+        restaurants.forEach(function (restaurant) {
+            restaurantList.innerHTML += `
+                <div class="restaurant-item">
+                    <div class="restaurant-name">${restaurant.name}</div>
+                    <div class="restaurant-cuisine">${restaurant.cuisine}</div>
+                </div>
+            `;
+        });
     });
-    
+
     // Filter cheap restaurants (same logic, loaded data)
-    filterButton.addEventListener('click', function() {
+    filterButton.addEventListener('click', function () {
         const filteredList = document.querySelector('#filtered-list');
-        
+
         if (restaurants.length === 0) {
             filteredList.innerHTML = '<p class="placeholder">No data loaded yet</p>';
             return;
         }
-        
+
         // Step 8: Use the same filter logic from Tutorial 5
         // Hint: const cheapRestaurants = restaurants.filter(function(restaurant) { })
-        
+
         // YOUR CODE HERE:
-        
-        
+        filteredList.innerHTML = '';
+        const cheapRestaurants = restaurants.filter(function (restaurant) {
+            return restaurant.priceRange === '$' || restaurant.priceRange === '$$';
+        });
+
+        cheapRestaurants.forEach(function (restaurant) {
+            filteredList.innerHTML += `
+                <div class="restaurant-item">
+                    <div class="restaurant-name">${restaurant.name}</div>
+                    <div class="restaurant-cuisine">${restaurant.cuisine}</div>
+                    <span class="restaurant-price">${restaurant.priceRange}</span>
+                </div>
+            `;
+        });
     });
-    
+
     // Show restaurant names (same logic, loaded data)
-    mapButton.addEventListener('click', function() {
+    mapButton.addEventListener('click', function () {
         const mappedList = document.querySelector('#mapped-list');
-        
+
         if (restaurants.length === 0) {
             mappedList.innerHTML = '<p class="placeholder">No data loaded yet</p>';
             return;
         }
-        
+
         // Step 9: Use the same map logic from Tutorial 5
         // Hint: const names = restaurants.map(function(restaurant) { })
-        
+
         // YOUR CODE HERE:
-        
-        
+        mappedList.innerHTML = '';
+        const names = restaurants.map(function (restaurant) {
+            return restaurant.name;
+        });
+
+        let listHTML = '<ul class="name-list">';
+        names.forEach(function (name) {
+            listHTML += `<li>${name}</li>`;
+        });
+        listHTML += '</ul>';
+        mappedList.innerHTML = listHTML;
     });
-    
+
     // ============================================
     // ERROR HANDLING DEMO
     // ============================================
-    
+
     // This demonstrates what happens when fetch() fails
-    errorButton.addEventListener('click', async function() {
+    errorButton.addEventListener('click', async function () {
         const errorDisplay = document.querySelector('#error-display');
-        
+
         errorDisplay.innerHTML = '<div class="status-display loading"><p class="status-message">Trying to load from bad URL...</p></div>';
-        
+
         try {
             // This will fail because the URL doesn't exist
             const response = await fetch('nonexistent-file.json');
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             const data = await response.json();
             errorDisplay.innerHTML = '<p class="placeholder">This should not appear</p>';
-            
+
         } catch (error) {
             // Step 10: Show user-friendly error message
             // Hint: Create error message div with helpful text
-            
+
             // YOUR CODE HERE:
-            
-            
+            errorDisplay.innerHTML = `
+                <div class="error-message">
+                    <p>Failed to load data: Unable to load file from the server.</p>
+                    <p>Please check the network connection or file path and try again.</p>
+                </div>
+            `;
+
             console.error('Demonstrated error:', error);
         }
     });
-    
+
 });
 
 // ============================================
@@ -169,7 +212,7 @@ function toggleMethodButtons(enabled) {
         document.querySelector('#filter-button'),
         document.querySelector('#map-button')
     ];
-    
+
     buttons.forEach(button => {
         button.disabled = !enabled;
     });
@@ -179,15 +222,15 @@ function toggleMethodButtons(enabled) {
 function updateStatus(state, message) {
     const statusDisplay = document.querySelector('#loading-status');
     const statusMessage = statusDisplay.querySelector('.status-message');
-    
+
     // Remove all state classes
     statusDisplay.classList.remove('loading', 'success', 'error');
-    
+
     // Add new state class
     if (state !== 'ready') {
         statusDisplay.classList.add(state);
     }
-    
+
     statusMessage.textContent = message;
 }
 
@@ -227,13 +270,13 @@ function resetTutorial() {
     restaurants = [];
     toggleMethodButtons(false);
     updateStatus('ready', 'Ready to load data');
-    
+
     // Clear all displays
     document.querySelector('#restaurant-list').innerHTML = '<p class="placeholder">Load data first, then click to display all restaurants</p>';
     document.querySelector('#filtered-list').innerHTML = '<p class="placeholder">Load data first, then click to show only affordable restaurants</p>';
     document.querySelector('#mapped-list').innerHTML = '<p class="placeholder">Load data first, then click to show just the restaurant names</p>';
     document.querySelector('#error-display').innerHTML = '<p class="placeholder">Click to see error handling in action</p>';
-    
+
     console.log('Tutorial reset');
 }
 
