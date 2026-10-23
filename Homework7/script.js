@@ -12,19 +12,19 @@ import {
     clearExistingMap,
     restaurants,
     clickToLoad
- } from './tutorial-support.js';
+} from './tutorial-support.js';
 
 // Global variables for your library instances
 let myChart = null;
 let myMap = null;
 
 // Wait for page load
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     console.log('Tutorial 8: Student work file ready!');
-    
+
     // Set up your event listeners
     // Set up event listeners - note the arrow function to pass the button
-    document.querySelector('#load-data-button').addEventListener('click', function(event) {
+    document.querySelector('#load-data-button').addEventListener('click', function (event) {
         clickToLoad(event.target); // Pass the button that was clicked
     });
     document.querySelector('#chart-button').addEventListener('click', createMyChart);
@@ -47,32 +47,36 @@ function createMyChart() {
         alert('No data loaded. Click "Load Data" first.');
         return;
     }
-    
+
     // Step 2: Process the restaurant data for charting
     // You need to count how many restaurants of each cuisine type there are
     const cuisineCounts = {};
-    restaurants.forEach(function(restaurant) {
+    restaurants.forEach(function (restaurant) {
         // TODO: Count restaurants by cuisine type
         // Hint: restaurant.cuisine is the field you want
         // Hint: cuisineCounts[cuisine] = (cuisineCounts[cuisine] || 0) + 1;
+        const cuisine = restaurant.cuisine || 'Unknown';
+        cuisineCounts[cuisine] = (cuisineCounts[cuisine] || 0) + 1;
     });
-    
+
     // Step 3: Transform counts into Chart.js format using array methods
     // const chartLabels = /* TODO: Get the cuisine types (keys) */;
     // const chartData = /* TODO: Get the counts (values) */;
-    
+    const chartLabels = Object.keys(cuisineCounts);
+    const chartData = Object.values(cuisineCounts);
+
     console.log('Chart data prepared:', { labels: chartLabels, data: chartData });
-    
+
     try {
         // Step 4: Get canvas and clear existing chart (provided)
         const canvas = document.querySelector('#restaurant-chart');
         const ctx = canvas.getContext('2d');
-        
+
         if (myChart) {
             myChart.destroy();
             myChart = null;
         }
-        
+
         // Step 5: Create the Chart.js chart (you complete the config)
         // options for charts: https://www.chartjs.org/docs/latest/charts/
         myChart = new Chart(ctx, {
@@ -82,7 +86,7 @@ function createMyChart() {
                 labels: chartLabels,
                 datasets: [{
                     /* TODO: adjust this name */
-                    label: 'name-of-series',
+                    label: 'Number of Restaurants',
                     data: chartData,
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.6)',
@@ -97,26 +101,32 @@ function createMyChart() {
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     title: {
                         display: true,
-                        text: 'title your chart please'
+                        text: 'Restaurant Distribution by Cuisine Type'
                     }
                 },
                 scales: {
                     y: {
                         beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            precision: 0
+                        },
                         title: {
                             display: true,
-                            text: 'a real y axis has a label'
+                            text: 'Number of Restaurants'
                         }
                     }
                 }
             }
         });
-        
+        window.myChart = myChart;
+
         console.log('Chart created successfully!');
-        
+
     } catch (error) {
         handleChartError(error); // Error handling provided in support file
     }
@@ -137,37 +147,44 @@ function createMyMap() {
         alert('No data loaded. Click "Load Data" first.');
         return;
     }
-    
+
     try {
         // Step 2: Clear existing map (provided)
         clearExistingMap(); // Function provided in support file
-        
+
         // Step 3: Create the map (provided)
         myMap = L.map('restaurant-map').setView([38.9897, -76.9378], 12);
-        
+
         // Step 4: Add map tiles (provided)
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
         }).addTo(myMap);
-        
+
         // Step 5: Add markers for restaurants (you complete this part)
-        restaurants.forEach(function(restaurant, index) {
+        restaurants.forEach(function (restaurant, index) {
             // Get coordinates (function provided in support file)
             const coords = getRestaurantCoordinates(restaurant, index);
-            
+
             // TODO: Create a marker at the coordinates
             const marker = L.marker(coords);
-            
+
             // TODO: Create popup content with restaurant information
             /* TODO: Build HTML string using restaurant.name, restaurant.cuisine, restaurant.rating */;
-            // const popupContent = ...;
-            
+            const popupContent = `
+                <div style="text-align: center;">
+                    <strong>${restaurant.name || 'Unknown Restaurant'}</strong><br>
+                    <em>${restaurant.cuisine || 'Unknown'} cuisine</em><br>
+                    Rating: ${restaurant.rating || 'N/A'}★<br>
+                    <small>${restaurant.neighborhood || 'Unknown location'}</small>
+                </div>
+            `;
+
             // TODO: Bind the popup to the marker and add to map
             marker.bindPopup(popupContent).addTo(myMap);
         });
-        
+
         console.log('Map created successfully!');
-        
+
     } catch (error) {
         handleMapError(error); // Error handling provided in support file
     }
@@ -188,31 +205,39 @@ function animateMyCards() {
         alert('No data loaded. Click "Load Data" first.');
         return;
     }
-    
+
     try {
         // Step 2: Clear and create cards (provided)
         createRestaurantCards(); // Function provided in support file
-        
+
         // Step 3: Create your animation sequence
         // TODO: Animate the .restaurant-card elements
         // Make them start invisible and small, then appear with a bounce
-        
-        gsap.fromTo('.restaurant-card', 
+
+        gsap.fromTo('.restaurant-card',
             // FROM state (starting point)
             {
                 /* TODO: Starting properties - opacity, scale, y position? */
+                opacity: 0,
+                scale: 0.8,
+                y: 50
             },
             // TO state (ending point)  
             {
                 /* TODO: Ending properties - make them fully visible and normal size */
-                duration: '0.2'
+                opacity: 1,
+                scale: 1,
+                y: 0,
+                duration: 0.2,
                 // stagger: /* TODO: Delay between each card? 0.1 seconds? */,
+                stagger: 0.2,
                 // ease: /* TODO: What kind of easing? "bounce.out"? */
+                ease: "bounce.out"
             }
         );
-        
+
         console.log('Animation created successfully!');
-        
+
     } catch (error) {
         handleAnimationError(error); // Error handling provided in support file
     }
@@ -224,18 +249,18 @@ function animateMyCards() {
 
 function testMyWork() {
     console.log('Testing your implementations...');
-    
+
     if (restaurants.length > 0) {
         console.log('Data loaded:', restaurants.length, 'restaurants');
-        
+
         // Test each function
         console.log('Testing Chart.js...');
         createMyChart();
-        
+
         setTimeout(() => {
             console.log('Testing Leaflet.js...');
             createMyMap();
-            
+
             setTimeout(() => {
                 console.log('Testing GSAP...');
                 animateMyCards();
@@ -247,3 +272,7 @@ function testMyWork() {
 }
 
 // Call testMyWork() in the console to test all your implementations
+window.createMyChart = createMyChart;
+window.createMyMap = createMyMap;
+window.animateMyCards = animateMyCards;
+window.testMyWork = testMyWork;

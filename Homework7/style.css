@@ -287,6 +287,7 @@ header p {
     justify-content: center;
 }
 
+#restaurant-chart,
 #rating-chart {
     max-width: 100%;
     max-height: 100%;
